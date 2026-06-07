@@ -24,10 +24,11 @@ class Settings(BaseSettings):
     chroma_path: Path = Path("./data/chroma")
 
     ollama_base_url: str = "http://localhost:11434"
+    ollama_models: Path = Path("./data/ollama/models")
     default_ai_provider: Literal["ollama", "openai", "gemini", "claude"] = "ollama"
     privacy_mode: bool = False
     embedding_model: str = "nomic-embed-text"
-    ollama_chat_model: str = "mistral:7b-q4"
+    ollama_chat_model: str = "qwen2.5:0.5b"
 
     whisper_model: str = "base"
     tts_provider: str = "coqui"

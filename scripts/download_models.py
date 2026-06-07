@@ -1,6 +1,7 @@
 """Download and warm up local models needed by Sanaya Phase 1."""
 
 import subprocess
+import os
 from pathlib import Path
 
 from loguru import logger
@@ -20,7 +21,10 @@ def main() -> None:
     Path("data/models/wake_word").mkdir(parents=True, exist_ok=True)
     Path("data/chroma").mkdir(parents=True, exist_ok=True)
     Path("data/sqlite").mkdir(parents=True, exist_ok=True)
-    run(["ollama", "pull", "mistral:7b-q4"])
+    ollama_models = Path("data/ollama/models").resolve()
+    ollama_models.mkdir(parents=True, exist_ok=True)
+    os.environ["OLLAMA_MODELS"] = str(ollama_models)
+    run(["ollama", "pull", "qwen2.5:0.5b"])
     run(["ollama", "pull", "nomic-embed-text"])
     logger.info("Whisper and Coqui models download on first library use.")
     logger.info("Place hey_sanaya.onnx at data/models/wake_word/hey_sanaya.onnx when available.")
