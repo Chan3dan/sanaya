@@ -12,6 +12,7 @@ h1 { margin: 0; font-size: 28px; }
 .connected, .ok { color: #50e3a4; }
 .disconnected, .warn { color: #f5c56b; }
 .chat, .panel { min-height: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 14px; }
+.memory-panel, .automation-panel { grid-template-rows: auto auto 1fr; }
 .voice-indicator, .toolbar, .status-item { display: flex; align-items: center; gap: 10px; background: #111724; border: 1px solid #202a3b; border-radius: 8px; padding: 12px; }
 .bars { display: flex; gap: 3px; margin-left: auto; }
 .bars i { width: 4px; height: 10px; background: #46536b; border-radius: 2px; }
@@ -22,8 +23,12 @@ h1 { margin: 0; font-size: 28px; }
 .messages { overflow: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; }
 .message { max-width: 680px; border: 1px solid #202a3b; border-radius: 8px; padding: 12px 14px; background: #111724; }
 .message.user { align-self: flex-end; background: #17304a; }
+.message.system { background: #331c24; }
 .message p { margin: 0 0 8px; line-height: 1.5; }
 .message small { color: #8c98ad; }
+.memory-list { overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+.memory-list .message { position: relative; padding-right: 52px; }
+.memory-list .message button { position: absolute; top: 12px; right: 12px; border: 0; color: #f4f7fb; background: transparent; cursor: pointer; }
 .composer { display: grid; grid-template-columns: 1fr 46px; gap: 10px; }
 input, select { color: #f4f7fb; background: #0d1119; border: 1px solid #253148; border-radius: 8px; padding: 12px; min-width: 0; }
 .composer button { border: 0; border-radius: 8px; background: #50e3a4; color: #04100b; display: grid; place-items: center; cursor: pointer; }
@@ -33,7 +38,7 @@ input:disabled, .composer button:disabled { opacity: 0.6; cursor: wait; }
 .status-item { justify-content: space-between; }
 @media (max-width: 760px) {
   .app { grid-template-columns: 1fr; }
-  aside { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; border-right: 0; border-bottom: 1px solid #1b2230; padding: 10px; }
+  aside { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; border-right: 0; border-bottom: 1px solid #1b2230; padding: 10px; }
   .brand { grid-column: 1 / -1; margin-bottom: 4px; }
   aside button span { display: none; }
   aside button { justify-content: center; }

@@ -1,5 +1,7 @@
 """Encrypted key management backed by OS keychain and the database."""
 
+from pathlib import Path
+
 from cryptography.fernet import Fernet
 import keyring
 from sqlalchemy import select
@@ -19,7 +21,15 @@ class KeyManager:
         key = keyring.get_password(self.service_name, self.master_key_name)
         if key is None:
             key = Fernet.generate_key().decode("utf-8")
-            keyring.set_password(self.service_name, self.master_key_name, key)
+            try:
+                keyring.set_password(self.service_name, self.master_key_name, key)
+            except Exception:
+                key_path = Path("data/security/fernet.key")
+                key_path.parent.mkdir(parents=True, exist_ok=True)
+                if key_path.exists():
+                    key = key_path.read_text(encoding="utf-8").strip()
+                else:
+                    key_path.write_text(key, encoding="utf-8")
         self._fernet = Fernet(key.encode("utf-8"))
 
     def encrypt_text(self, plaintext: str) -> str:

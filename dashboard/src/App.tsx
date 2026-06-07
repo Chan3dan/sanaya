@@ -2,8 +2,9 @@
  * Sanaya dashboard application shell.
  */
 import { useEffect, useMemo } from 'react';
-import { Brain, Database, HeartPulse, MessageSquare, Plug, Settings } from 'lucide-react';
+import { Brain, Cpu, Database, HeartPulse, MessageSquare, Plug, Settings } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { AutomationPanel } from './components/Automation/AutomationPanel';
 import { ChatWindow } from './components/Chat/ChatWindow';
 import { MemoryBrowser } from './components/Memory/MemoryBrowser';
 import { StatusBar } from './components/SystemHealth/StatusBar';
@@ -13,6 +14,7 @@ import './styles.css';
 const nav = [
   ['Chat', MessageSquare],
   ['Memory', Database],
+  ['Automation', Cpu],
   ['Plugins', Plug],
   ['Settings', Settings],
   ['Health', HeartPulse]
@@ -52,8 +54,9 @@ export default function App() {
         </header>
         {activeModule === 'Chat' && <ChatWindow />}
         {activeModule === 'Memory' && <MemoryBrowser />}
+        {activeModule === 'Automation' && <AutomationPanel />}
         {activeModule === 'Health' && <StatusBar connected={isConnected} />}
-        {!['Chat', 'Memory', 'Health'].includes(activeModule) && <section className="panel"><div className="empty">{activeModule} controls are ready for Phase 1 wiring.</div></section>}
+        {!['Chat', 'Memory', 'Automation', 'Health'].includes(activeModule) && <section className="panel"><div className="empty">{activeModule} controls are ready for Phase 1 wiring.</div></section>}
       </div>
     </main>
   );

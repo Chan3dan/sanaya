@@ -11,6 +11,7 @@ import rateLimit from 'express-rate-limit';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import winston from 'winston';
+import automationRouter from './routes/automation';
 import chatRouter from './routes/chat';
 import memoryRouter from './routes/memory';
 import settingsRouter from './routes/settings';
@@ -38,6 +39,7 @@ app.use(morgan('combined'));
 app.use(rateLimit({ windowMs: 60_000, limit: 120 }));
 app.use('/api/v1/chat', chatRouter(publisher));
 app.use('/api/v1/memory', memoryRouter());
+app.use('/api/v1/automation', automationRouter());
 app.use('/api/v1', settingsRouter());
 
 registerSocketEvents(io, publisher);

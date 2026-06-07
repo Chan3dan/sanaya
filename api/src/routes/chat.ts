@@ -5,13 +5,24 @@ import { randomUUID } from 'node:crypto';
 import { Router } from 'express';
 import type Redis from 'ioredis';
 
-interface OllamaGenerateResponse {
-  response?: string;
+const coreUrl = process.env.SANAYA_CORE_URL ?? 'http://127.0.0.1:8000';
+
+async function sendCoreResponse(response: Response, res: { status: (code: number) => { json: (body: unknown) => void } }): Promise<void> {
+  const text = await response.text();
+  try {
+    res.status(response.status).json(JSON.parse(text));
+  } catch {
+    res.status(response.status).json({ error: text || response.statusText });
+  }
 }
 
 export default function chatRouter(publisher: Redis): Router {
   const router = Router();
-  router.get('/history', (_req, res) => res.json([]));
+  router.get('/history', async (req, res) => {
+    const sessionId = encodeURIComponent(String(req.query.session_id ?? 'default'));
+    const response = await fetch(`${coreUrl}/chat/history?session_id=${sessionId}`);
+    await sendCoreResponse(response, res);
+  });
   router.post('/message', async (req, res) => {
     const messageId = randomUUID();
     const text = String(req.body.text ?? '').trim();
@@ -22,32 +33,21 @@ export default function chatRouter(publisher: Redis): Router {
 
     await publisher.publish('voice.manual_input', JSON.stringify({ message_id: messageId, text }));
 
-    const ollamaBaseUrl = process.env.OLLAMA_BASE_URL ?? 'http://127.0.0.1:11434';
-    const model = process.env.OLLAMA_CHAT_MODEL ?? 'qwen2.5:0.5b';
     try {
-      const response = await fetch(`${ollamaBaseUrl}/api/generate`, {
+      const response = await fetch(`${coreUrl}/chat/message`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          model,
-          prompt: text,
-          stream: false
-        })
+        body: JSON.stringify({ text, session_id: req.body.session_id ?? 'default' })
       });
-
-      if (!response.ok) {
-        res.status(502).json({ error: `Ollama returned ${response.status}` });
-        return;
-      }
-
-      const data = (await response.json()) as OllamaGenerateResponse;
-      const content = data.response?.trim() || 'Sanaya did not return a response.';
-      await publisher.publish('ai.response.done', JSON.stringify({ message_id: messageId, provider: 'ollama', model, content }));
-      res.json({ message_id: messageId, provider: 'ollama', model, content });
+      await sendCoreResponse(response, res);
     } catch (error) {
-      res.status(502).json({ error: error instanceof Error ? error.message : 'Ollama request failed.' });
+      res.status(502).json({ error: error instanceof Error ? error.message : 'Core chat request failed.' });
     }
   });
-  router.delete('/history', (_req, res) => res.json({ deleted: true }));
+  router.delete('/history', async (req, res) => {
+    const sessionId = encodeURIComponent(String(req.query.session_id ?? 'default'));
+    const response = await fetch(`${coreUrl}/chat/history?session_id=${sessionId}`, { method: 'DELETE' });
+    await sendCoreResponse(response, res);
+  });
   return router;
 }
