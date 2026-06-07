@@ -18,8 +18,10 @@ const nav = [
   ['Health', HeartPulse]
 ] as const;
 
+const apiUrl = 'http://127.0.0.1:3001';
+
 export default function App() {
-  const socket = useMemo(() => io('http://localhost:3001', { autoConnect: true }), []);
+  const socket = useMemo(() => io(apiUrl, { autoConnect: true, transports: ['websocket'] }), []);
   const { activeModule, isConnected, setActiveModule, setConnected, setVoiceStatus } = useAppStore();
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function App() {
           <h1>{activeModule}</h1>
           <span className={isConnected ? 'connected' : 'disconnected'}>{isConnected ? 'connected' : 'offline'}</span>
         </header>
-        {activeModule === 'Chat' && <ChatWindow socket={socket} />}
+        {activeModule === 'Chat' && <ChatWindow />}
         {activeModule === 'Memory' && <MemoryBrowser />}
         {activeModule === 'Health' && <StatusBar connected={isConnected} />}
         {!['Chat', 'Memory', 'Health'].includes(activeModule) && <section className="panel"><div className="empty">{activeModule} controls are ready for Phase 1 wiring.</div></section>}

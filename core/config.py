@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
     chroma_path: Path = Path("./data/chroma")
 
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = "http://127.0.0.1:11434"
     ollama_models: Path = Path("./data/ollama/models")
     default_ai_provider: Literal["ollama", "openai", "gemini", "claude"] = "ollama"
     privacy_mode: bool = False

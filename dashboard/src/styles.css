@@ -27,6 +27,7 @@ h1 { margin: 0; font-size: 28px; }
 .composer { display: grid; grid-template-columns: 1fr 46px; gap: 10px; }
 input, select { color: #f4f7fb; background: #0d1119; border: 1px solid #253148; border-radius: 8px; padding: 12px; min-width: 0; }
 .composer button { border: 0; border-radius: 8px; background: #50e3a4; color: #04100b; display: grid; place-items: center; cursor: pointer; }
+input:disabled, .composer button:disabled { opacity: 0.6; cursor: wait; }
 .empty { color: #8c98ad; padding: 28px 0; }
 .status-grid { display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 12px; align-content: start; }
 .status-item { justify-content: space-between; }
